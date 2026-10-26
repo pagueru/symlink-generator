@@ -11,6 +11,10 @@ class LocalFileSystem:
 
     def resolve(self, path_text: str) -> Path:
         """Devolve o caminho absoluto do texto digitado."""
+        # No Windows o resolve() aceita caractere nulo e só falha depois, ao criar o link.
+        if "\x00" in path_text:
+            raise InvalidPathError(path_text)
+
         try:
             return Path(path_text).expanduser().resolve()
         except (OSError, ValueError) as exc:
