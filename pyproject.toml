@@ -1,0 +1,102 @@
+[project]
+name = "symlink-generator"
+version = "1.0.0"
+description = "Cria symlinks no Windows por uma janela simples, sem linha de comando"
+authors = [
+    { name = "Raphael Coelho", email = "raphael.phael@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.13"
+
+dependencies = [
+    "ttkbootstrap>=2.2.6,<3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1",
+    "ruff>=0.17",
+    "pyinstaller>=6.22 ; sys_platform == 'win32'",
+]
+
+[project.urls]
+repository = "https://github.com/pagueru/symlink-generator"
+
+[project.gui-scripts]
+symlink-generator = "symlink_generator.main:main"
+
+[build-system]
+requires = ["uv_build>=0.7.19,<0.8.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "symlink_generator"
+module-root = "src"
+
+[tool.ruff]
+# Sem target-version de propósito: o ruff infere de requires-python acima.
+# Fixar aqui duplica a versão e, se ficar acima do runtime real, gera autofix
+# com sintaxe nova demais (ex: PEP 695 em 3.11). Não readicionar.
+fix = true               # Ativa correções automáticas
+line-length = 100        # Comprimento máximo da linha
+unsafe-fixes = true      # Permite correções que podem alterar o comportamento do código
+
+[tool.ruff.lint]
+select = ["ALL"]         # Ativa todas as regras de linting, análise e estilo
+
+ignore = [
+    # Conflitos de formatação - resolvidos nativamente pelo formatador integrado
+    "D203",    # Conflito com D211: exige linha em branco antes da docstring da classe
+    "D212",    # Conflito com D213: resumo da docstring deve iniciar na primeira linha
+    "COM812",  # Vírgula final ausente - gerenciado automaticamente pelo formatador
+    "ISC001",  # Concatenação implícita de strings - resolvido pelo formatador
+    "G004",    # Uso de f-strings em logs - permitido para melhorar a legibilidade
+
+    # Depuração e desenvolvimento - flexibilidade para ciclos de codificação local
+    "S101",    # Permite cláusulas assert para testes unitários e checagens rápidas
+    "T201",    # Permite comandos print() para inspeções e debugs rápidos no terminal
+    "T203",    # Permite comandos pprint() para exibir estruturas de dados complexas
+    "ERA001",  # Permite blocos de códigos temporariamente comentados nos arquivos
+    "CPY001",  # Não exige cabeçalho de copyright: repositórios pessoais/privados
+
+    # Flexibilidade de tipagem, performance e boas práticas
+    "PERF401", # Permite laços for convencionais em vez de compreensões obrigatórias
+    "ANN401",  # Permite o uso de typing.Any onde tipagens rígidas limitam o dinamismo
+    "TRY003",  # Permite strings longas explicativas injetadas diretamente em exceções
+    "EM101",   # Permite strings literais básicas no construtor de exceções padrões
+
+    # Segurança - manipulação de exceções e caminhos em ambientes isolados
+    "S105",    # Permite strings similares a senhas em escopos de teste ou mocks
+    "S607",    # Permite invocação de subprocessos usando caminhos curtos ou relativos
+    "S608",    # Permite consultas SQL geradas via f-string sob escopo controlado
+
+    # Convenções textuais e padronização de nomenclatura
+    "RUF001",  # Permite caracteres ambíguos (ex: EN DASH) em strings sem alertas
+    "N999",    # Permite nomes de módulos fora do padrão padrão snake_case estrito
+
+    # Importações e ciclo de vida de módulos
+    "F401",    # Permite imports sem uso explícito (essencial em módulos __init__.py)
+    "PLC0415", # Permite import dentro de função (import tardio em CLI, dependência opcional)
+
+    # Gerenciamento e sinalização de pendências (TODOs / FIXMEs)
+    "TD001",   # Permite flags TODO fora do formato de padronização estrito do ruff
+    "TD002",   # Permite a criação de marcas TODO sem vincular o autor responsável
+    "TD003",   # Permite a criação de marcas TODO sem linkagem obrigatória de issues
+    "FIX001",  # Permite anotações FIXME casuais sem detalhamento robusto associado
+    "FIX002",  # Permite o uso livre de marcações TODO sem interromper as esteiras CI
+    "FIX003",  # Permite anotações FIXME casuais sem link direto para issues criadas
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"             # Exigir docstrings ("numpy" ou "pep257")
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["INP001", "D", "ANN", "PLR2004", "SLF001"]
+"tools/**" = ["INP001"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gui: precisa de display",
+    "windows: só roda no Windows",
+]
