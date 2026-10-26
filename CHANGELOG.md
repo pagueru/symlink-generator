@@ -15,6 +15,7 @@ Primeira versão como repositório próprio, com o app reorganizado em camadas.
 - Integração contínua no GitHub Actions, rodando lint, checagem de formato e testes no Windows.
 - Build do executável pelo PyInstaller, com spec versionado e modo `--smoke-test` para conferir o `.exe`.
 - Documentação de uso, de arquitetura e de desenvolvimento, com screenshots da janela e dos diálogos.
+- Log em arquivo em `%LOCALAPPDATA%\symlink-generator\symlink-generator.log`, com giro a cada 1 MB, já que o executável não tem console.
 - Licença MIT.
 
 ### Alterado
