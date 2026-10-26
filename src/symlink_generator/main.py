@@ -56,13 +56,13 @@ class App:
     """Reúne a janela, a view e o presenter já ligados entre si."""
 
     root: ttk.Window
-    # Janela raiz do ttkbootstrap.
+    """Janela raiz do ttkbootstrap."""
 
     view: TkSymlinkView
-    # Formulário que lê os campos e mostra os diálogos.
+    """Formulário que lê os campos e mostra os diálogos."""
 
     presenter: SymlinkFormPresenter
-    # Ponte entre o formulário e o caso de uso.
+    """Ponte entre o formulário e o caso de uso."""
 
 
 def build_app() -> App:

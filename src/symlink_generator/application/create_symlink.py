@@ -20,8 +20,8 @@ from symlink_generator.domain.paths import clean_path_text, validate_link_name
 
 logger = logging.getLogger(__name__)
 
-WINDOWS_ACCESS_DENIED_ERROR: int = 1314
-"""Código de erro do Windows para falta de privilégio na criação do symlink."""
+ERROR_PRIVILEGE_NOT_HELD: int = 1314
+"""Código do Windows (ERROR_PRIVILEGE_NOT_HELD) quando falta permissão para criar symlink."""
 
 
 @dataclass(frozen=True)
@@ -29,16 +29,16 @@ class CreateSymlinkCommand:
     """Carrega o texto cru digitado na tela."""
 
     source: str
-    # Texto do campo Origem, antes de qualquer limpeza.
+    """Texto do campo Origem, antes de qualquer limpeza."""
 
     destination: str
-    # Texto do campo Destino, antes de qualquer limpeza.
+    """Texto do campo Destino, antes de qualquer limpeza."""
 
     link_name: str
-    # Texto do campo Nome do link; vazio usa o nome da origem.
+    """Texto do campo Nome do link; vazio usa o nome da origem."""
 
     overwrite: bool
-    # Indica se o checkbox Sobrescrever estava marcado.
+    """Indica se o checkbox Sobrescrever estava marcado."""
 
 
 class CreateSymlinkUseCase:
@@ -113,7 +113,7 @@ class CreateSymlinkUseCase:
     @staticmethod
     def _creation_error(exc: OSError, source: Path, target: Path) -> LinkCreationError:
         """Converte o erro do sistema no erro esperado correspondente."""
-        if getattr(exc, "winerror", None) == WINDOWS_ACCESS_DENIED_ERROR:
+        if getattr(exc, "winerror", None) == ERROR_PRIVILEGE_NOT_HELD:
             return PrivilegeRequiredError(source, target, str(exc))
 
         return LinkCreationError(source, target, str(exc))

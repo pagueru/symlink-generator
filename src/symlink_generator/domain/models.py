@@ -9,16 +9,16 @@ class LinkRequest:
     """Descreve o symlink que a pessoa pediu para criar."""
 
     source: Path
-    # Caminho absoluto do arquivo ou pasta que o link aponta.
+    """Caminho absoluto do arquivo ou pasta que o link aponta."""
 
     destination_dir: Path
-    # Pasta onde o link será criado.
+    """Pasta onde o link será criado."""
 
     link_name: str
-    # Nome pedido para o link; vazio significa copiar o nome da origem.
+    """Nome pedido para o link; vazio significa copiar o nome da origem."""
 
     overwrite: bool = field(kw_only=True)
-    # Indica se um link que já existe pode ser substituído.
+    """Indica se um link que já existe pode ser substituído."""
 
     @property
     def target(self) -> Path:
@@ -31,10 +31,10 @@ class LinkResult:
     """Descreve o symlink recém-criado."""
 
     source: Path
-    # Caminho absoluto do arquivo ou pasta que o link aponta.
+    """Caminho absoluto do arquivo ou pasta que o link aponta."""
 
     target: Path
-    # Caminho final do link criado.
+    """Caminho final do link criado."""
 
     is_directory: bool
-    # Indica se a origem é pasta, o que vira target_is_directory no Windows.
+    """Indica se a origem é pasta, o que vira target_is_directory no Windows."""
