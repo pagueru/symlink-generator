@@ -1,9 +1,12 @@
 """Monta a aplicação gráfica e serve de ponto de entrada do app."""
 
 import logging
+import os
 import sys
 from dataclasses import dataclass
 from functools import partial
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from tkinter import messagebox
 from types import TracebackType
 
@@ -26,14 +29,26 @@ WINDOW_TITLE: str = "Symlink Generator"
 WINDOW_GEOMETRY: str = "760x220"
 """Tamanho inicial da janela, suficiente para as cinco linhas do formulário."""
 
-UNEXPECTED_ERROR_MESSAGE: str = "Ocorreu um erro inesperado. Detalhes no log."
-"""Aviso genérico do diálogo de erro que não tem explicação específica."""
+UNEXPECTED_ERROR_MESSAGE: str = "Ocorreu um erro inesperado. Os detalhes ficaram no log:"
+"""Aviso genérico do diálogo de erro, seguido do caminho do arquivo de log."""
 
 SMOKE_TEST_FLAG: str = "--smoke-test"
 """Argumento que monta e fecha a janela sem entrar no laço de eventos."""
 
 LOG_FORMAT: str = "%(asctime)s - %(module)s:%(lineno)03d - %(levelname)s - %(message)s"
 """Formato de log esperado no arquivo e no console."""
+
+LOG_DIR_NAME: str = "symlink-generator"
+"""Pasta do app dentro de %LOCALAPPDATA%."""
+
+LOG_FILE_NAME: str = "symlink-generator.log"
+"""Nome do arquivo de log."""
+
+LOG_MAX_BYTES: int = 1_000_000
+"""Tamanho máximo do log antes de girar para um arquivo novo."""
+
+LOG_BACKUP_COUNT: int = 3
+"""Quantos logs antigos ficam guardados depois do giro."""
 
 
 @dataclass
@@ -86,12 +101,42 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def log_file_path() -> Path:
+    """Devolve o arquivo de log em %LOCALAPPDATA%, ou em ~/.local/state fora do Windows."""
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    base_dir = Path(local_app_data) if local_app_data else Path.home() / ".local" / "state"
+
+    return base_dir / LOG_DIR_NAME / LOG_FILE_NAME
+
+
 def _configure_logging() -> None:
-    """Liga o log em INFO no formato padrão do app."""
+    """Liga o log em INFO no arquivo do app e, quando há console, no stderr."""
+    handlers: list[logging.Handler] = []
+    path = log_file_path()
+
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handlers.append(
+            RotatingFileHandler(
+                path,
+                maxBytes=LOG_MAX_BYTES,
+                backupCount=LOG_BACKUP_COUNT,
+                encoding="utf-8",
+            ),
+        )
+    except OSError:
+        # Sem pasta gravável o app segue funcionando, só sem log em arquivo.
+        pass
+
+    # No .exe sem console o stderr é None: o arquivo é o único destino do log.
+    if sys.stderr is not None:
+        handlers.append(logging.StreamHandler())
+
     logging.basicConfig(
         format=LOG_FORMAT,
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.INFO,
+        handlers=handlers,
     )
 
 
@@ -107,4 +152,4 @@ def _report_unexpected_error(
 ) -> None:
     """Registra o erro inesperado do Tk e avisa a pessoa sem detalhe técnico."""
     logger.error("Erro inesperado no callback da interface", exc_info=(exc, val, tb))
-    messagebox.showerror(ERROR_TITLE, UNEXPECTED_ERROR_MESSAGE)
+    messagebox.showerror(ERROR_TITLE, f"{UNEXPECTED_ERROR_MESSAGE}\n{log_file_path()}")

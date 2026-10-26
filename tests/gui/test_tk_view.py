@@ -4,12 +4,13 @@ import os
 import subprocess
 import sys
 from collections.abc import Iterator
+from pathlib import Path
 from tkinter import messagebox
 
 import pytest
 
 from symlink_generator.application.create_symlink import CreateSymlinkCommand
-from symlink_generator.main import App, build_app
+from symlink_generator.main import UNEXPECTED_ERROR_MESSAGE, App, build_app, log_file_path
 from symlink_generator.presentation.messages import INITIAL_STATUS
 
 # Sem display só no Linux; em qualquer outro caso, falha do Tk é falha do teste.
@@ -20,7 +21,6 @@ pytestmark = [
     pytest.mark.skipif(NO_DISPLAY, reason="sem DISPLAY: rode com xvfb-run -a"),
 ]
 
-GENERIC_ERROR_MESSAGE = "Ocorreu um erro inesperado. Detalhes no log."
 SMOKE_TIMEOUT_SECONDS = 60
 
 
@@ -114,11 +114,13 @@ def test_unexpected_callback_error_shows_generic_dialog(
 
     app.view.submit_button.invoke()
 
-    assert dialogs == [("Erro", GENERIC_ERROR_MESSAGE)]
+    assert dialogs == [("Erro", f"{UNEXPECTED_ERROR_MESSAGE}\n{log_file_path()}")]
 
 
-def test_entry_point_smoke_test_returns_zero() -> None:
+def test_entry_point_smoke_test_returns_zero(tmp_path: Path) -> None:
     """Roda o ponto de entrada real num processo à parte e espera saída zero."""
+    # LOCALAPPDATA e HOME temporários: o log do teste não suja a pasta real do usuário.
+    env = {**os.environ, "LOCALAPPDATA": str(tmp_path), "HOME": str(tmp_path)}
     # Processo próprio: a janela da sessão continua viva e o ttkbootstrap recusa a segunda.
     result = subprocess.run(
         [sys.executable, "-m", "symlink_generator", "--smoke-test"],
@@ -126,6 +128,8 @@ def test_entry_point_smoke_test_returns_zero() -> None:
         text=True,
         timeout=SMOKE_TIMEOUT_SECONDS,
         check=False,
+        env=env,
     )
 
     assert result.returncode == 0, result.stderr
+    assert (tmp_path / "symlink-generator" / "symlink-generator.log").is_file()

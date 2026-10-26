@@ -81,6 +81,10 @@ Use só o nome, sem caminho. O app recusa barra, os caracteres `< > : " | ? *`, 
 
 Existe um arquivo ou uma pasta real no lugar do link. Remova ou renomeie esse item na mão e crie o link de novo. O app não faz essa remoção por você.
 
+### Apareceu "Ocorreu um erro inesperado"
+
+É uma falha que o app não sabe explicar. Os detalhes técnicos ficam no arquivo `%LOCALAPPDATA%\symlink-generator\symlink-generator.log`, cujo caminho aparece no próprio aviso. Se for abrir uma issue, anexe as últimas linhas desse arquivo.
+
 ## Documentação
 
 - [Arquitetura](docs/architecture.md) mostra como o código está dividido e onde cada regra mora.
