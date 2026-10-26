@@ -8,7 +8,7 @@ O projeto usa Python 3.13 e `uv` para dependências, execução e ferramentas. P
 uv sync
 ```
 
-Isso cria o `.venv` e instala o grupo `dev`. No homelab, todo comando `uv`, `python` e `pytest` roda com `env -u PYTHONPATH` na frente, porque o ambiente exporta um `PYTHONPATH` de outro Python e quebra o venv do projeto.
+Isso cria o `.venv` e instala o grupo `dev`. Se o seu terminal exporta `PYTHONPATH` apontando para outro Python, limpe a variável antes (`env -u PYTHONPATH uv ...` no Linux): ela tem prioridade sobre o venv e quebra os imports.
 
 Para rodar o app a partir do código:
 
@@ -22,15 +22,15 @@ uv run symlink-generator
 uv run pytest
 ```
 
-A suíte tem 75 testes no Windows. Dois marcadores separam o que depende de ambiente:
+A suíte tem 77 testes no Windows. Dois marcadores separam o que depende de ambiente:
 
 - `gui`: monta uma janela Tk real. Precisa de display.
 - `windows`: cria junction de verdade e só roda no Windows.
 
-Os testes sem marcador rodam em qualquer sistema. No Linux:
+Os testes sem marcador rodam em qualquer sistema. No Linux, sem janela:
 
 ```bash
-xvfb-run -a uv run pytest -m "not gui"
+uv run pytest -m "not gui"
 ```
 
 Para rodar os testes de janela no Linux são necessários `xvfb-run` e um Python com `_tkinter` compartilhado, vindo da distro ou do pyenv. O CPython que o `uv` baixa traz `_tkinter` embutido, e o `Pillow.ImageTk` do ttkbootstrap falha com `bad argument type for built-in operation` nesse caso. A saída é criar o venv com o Python do sistema:
