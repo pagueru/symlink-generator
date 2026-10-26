@@ -100,3 +100,5 @@ markers = [
     "gui: precisa de display",
     "windows: só roda no Windows",
 ]
+# O tema superhero é nome pré-2.0 do ttkbootstrap; vale até a 3.0, travada no pyproject.
+filterwarnings = ["ignore:'superhero' is a legacy:DeprecationWarning"]
