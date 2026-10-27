@@ -13,42 +13,9 @@ from symlink_generator.application.create_symlink import CreateSymlinkCommand
 from symlink_generator.main import UNEXPECTED_ERROR_MESSAGE, App, build_app, log_file_path
 from symlink_generator.presentation.messages import INITIAL_STATUS
 
-# Sem display só no Linux; em qualquer outro caso, falha do Tk é falha do teste.
-NO_DISPLAY = sys.platform.startswith("linux") and not os.environ.get("DISPLAY")
-
-pytestmark = [
-    pytest.mark.gui,
-    pytest.mark.skipif(NO_DISPLAY, reason="sem DISPLAY: rode com xvfb-run -a"),
-]
+pytestmark = pytest.mark.gui
 
 SMOKE_TIMEOUT_SECONDS = 60
-
-
-@pytest.fixture(scope="session")
-def session_app() -> Iterator[App]:
-    """Monta uma única janela para a sessão inteira de testes."""
-    # Uma janela só: o ttkbootstrap 2.x aceita uma raiz viva por processo, e no Windows
-    # criar e destruir várias raizes seguidas falha de forma intermitente ao ler o init.tcl.
-    built = build_app()
-
-    try:
-        yield built
-    finally:
-        built.root.destroy()
-
-
-@pytest.fixture
-def app(session_app: App) -> Iterator[App]:
-    """Entrega a janela limpa e devolve o callback original do botão ao final."""
-    original_callback = session_app.view._submit_callback
-    assert original_callback is not None
-    session_app.view.reset_form()
-
-    try:
-        yield session_app
-    finally:
-        session_app.view.bind_submit(original_callback)
-        session_app.view.reset_form()
 
 
 def test_build_app_has_title_and_initial_status(app: App) -> None:

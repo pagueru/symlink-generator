@@ -96,6 +96,8 @@ convention = "google"             # Exigir docstrings ("numpy" ou "pep257")
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Deixa os helpers de teste (fakes.py) importáveis sem transformar tests/ em pacote.
+pythonpath = ["tests"]
 markers = [
     "gui: precisa de display",
     "windows: só roda no Windows",

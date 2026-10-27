@@ -3,7 +3,7 @@
 from pathlib import PureWindowsPath
 
 import pytest
-from conftest import FakeFileSystem
+from fakes import FakeFileSystem
 
 from symlink_generator.application.create_symlink import (
     CreateSymlinkCommand,
