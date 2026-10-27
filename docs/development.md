@@ -22,7 +22,7 @@ uv run symlink-generator
 uv run pytest
 ```
 
-A suíte tem 77 testes no Windows. Dois marcadores separam o que depende de ambiente:
+A suíte tem 78 testes no Windows. Dois marcadores separam o que depende de ambiente:
 
 - `gui`: monta uma janela Tk real. Precisa de display.
 - `windows`: cria junction de verdade e só roda no Windows.
@@ -91,6 +91,8 @@ O script roda só no Windows e precisa da sessão do usuário com a tela desbloq
 
 O workflow em `.github/workflows/ci.yml` roda em `windows-latest` a cada push ou pull request para `main`. Os passos são `uv sync`, `uv run ruff check --no-fix .`, `uv run ruff format --check .` e `uv run pytest`. O job é único porque o app é só Windows: não há matriz de sistemas.
 
-## Dívida conhecida
+## Atualizar o ttkbootstrap
 
-O tema `superhero` é o nome legado do ttkbootstrap 2.x. Ele vale até a versão 3.0, e a dependência está travada em `<3` por isso. Antes de liberar a 3.x, troque o tema em `main.THEME_NAME` e remova o filtro de aviso do `pyproject.toml`.
+A dependência está travada em `>=2.2.6,<3`. O tema do app é declarado pela API `Theme` da 2.x em `presentation/theme.py`, com a paleta do antigo `superhero`, então não depende de nome de tema legado.
+
+O `pyproject.toml` transforma `DeprecationWarning` em erro na suíte. Uma API que a próxima versão vai remover quebra os testes já na versão atual, antes de quebrar o app. Para testar uma versão nova, rode `uv lock --upgrade-package ttkbootstrap`, depois `uv sync` e a suíte inteira, inclusive os testes `gui`. Só suba o limite `<3` depois de a suíte passar na 3.x e de conferir as screenshots.

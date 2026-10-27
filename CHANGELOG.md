@@ -23,6 +23,6 @@ Primeira versão como repositório próprio, com o app reorganizado em camadas.
 - Sobrescrever só substitui link. O script antigo apagava um arquivo real quando a opção estava marcada; agora arquivo ou pasta de verdade no caminho final vira erro e o app pede remoção manual.
 - O nome do link passou a ser validado. O app recusa barra, `.` e `..`, os caracteres `< > : " | ? *`, ponto ou espaço no final e os nomes reservados do Windows. Antes, um nome como `..\x` criava o link fora do destino. Origem na raiz de unidade, como `C:\`, agora exige nome do link.
 - Falta de permissão do Windows virou mensagem clara: em vez do código 1314, a tela explica como ligar o Modo de Desenvolvedor ou abrir como administrador.
-- `ttkbootstrap` passou a ser dependência obrigatória e o fallback para `tkinter.ttk` saiu. Os diálogos continuam os nativos do `tkinter.messagebox`.
+- `ttkbootstrap` passou a ser dependência obrigatória, na versão 2.x, e o fallback para `tkinter.ttk` saiu. O tema escuro é declarado pela API `Theme` da 2.x com a paleta do antigo `superhero`, sem depender de nome de tema legado. Os diálogos continuam os nativos do `tkinter.messagebox`.
 - O executável passou a se chamar `symlink-generator.exe` e a morar em `%LOCALAPPDATA%\Programs\symlink-generator\`.
 - Erro esperado virou mensagem específica na tela, e erro inesperado passou a ser registrado no log com traceback e mostrado num diálogo genérico. Nenhuma exceção escapa do callback do Tk, o que importa no executável sem console.
