@@ -16,12 +16,10 @@ from symlink_generator.application.create_symlink import CreateSymlinkUseCase
 from symlink_generator.infrastructure.local_filesystem import LocalFileSystem
 from symlink_generator.presentation.messages import ERROR_TITLE
 from symlink_generator.presentation.presenter import SymlinkFormPresenter
+from symlink_generator.presentation.theme import register_theme
 from symlink_generator.presentation.tk_view import TkSymlinkView
 
 logger = logging.getLogger(__name__)
-
-THEME_NAME: str = "superhero"
-"""Tema escuro aplicado à janela."""
 
 WINDOW_TITLE: str = "Symlink Generator"
 """Título mostrado na barra da janela."""
@@ -67,7 +65,7 @@ class App:
 
 def build_app() -> App:
     """Monta a janela principal com view, presenter e tratamento de erro ligados."""
-    root = ttk.Window(themename=THEME_NAME)
+    root = ttk.Window(themename=register_theme())
     root.title(WINDOW_TITLE)
     root.geometry(WINDOW_GEOMETRY)
     root.minsize(760, 220)
