@@ -12,10 +12,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Instala o uv e o Python 3.13
-        uses: astral-sh/setup-uv@v10
+        # O setup-uv não publica tag flutuante de major desde a v8: a versão vai fixa.
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: "3.13"
           enable-cache: true
