@@ -26,7 +26,7 @@ O executável tem cerca de 20 MB e não é assinado digitalmente. O Windows pode
 
 Com o `uv` instalado:
 
-```powershell
+```bash
 uv tool install git+https://github.com/pagueru/symlink-generator
 symlink-generator
 ```
